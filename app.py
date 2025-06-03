@@ -14,6 +14,11 @@ with open("newmodel.pkl", "rb") as file:
 
 app = Flask(__name__)
 
+
+@app.route("/")
+def home():
+    return "Hello, World!"
+
 @app.route("/api/data", methods=["GET"])
 def get_data():
     return jsonify({"message": "Data returned"})
@@ -21,21 +26,30 @@ def get_data():
 @app.route('/api/check-url', methods=['POST'])
 def predict():
     try:
+        print("Received a request")  # Debug line
         data = request.get_json()
+        print(f"Request JSON: {data}")
         url = data.get("url")
 
         if not url:
+            print("No URL in request")
             return jsonify({"error": "Missing 'url' in request"}), 400
 
         obj = FeatureExtraction(url)
-        x = np.array(obj.getFeaturesList()).reshape(1, 30)
+        features = obj.getFeaturesList()
+        print(f"Features extracted: {features}")
+        x = np.array(features).reshape(1, 30)
+
         y_pred = gbc.predict(x)[0]
+        print(f"Prediction: {y_pred}")
 
         result = convertion(url, int(y_pred))
+        print(f"Result: {result}")
+
         return jsonify(result)
 
     except Exception as e:
+        print(f"Exception: {e}")
         return jsonify({"error": str(e)}), 500
-
 if __name__ == "__main__":
     app.run(debug=True)
