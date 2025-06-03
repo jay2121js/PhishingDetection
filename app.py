@@ -1,5 +1,5 @@
-# Importing required libraries
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import numpy as np
 import warnings
 import pickle
@@ -13,7 +13,7 @@ with open("newmodel.pkl", "rb") as file:
     gbc = pickle.load(file)
 
 app = Flask(__name__)
-
+CORS(app)  # Enable CORS for all routes
 
 @app.route("/")
 def home():
@@ -51,5 +51,6 @@ def predict():
     except Exception as e:
         print(f"Exception: {e}")
         return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
     app.run(debug=True)
