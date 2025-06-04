@@ -13,8 +13,10 @@ with open("newmodel.pkl", "rb") as file:
     gbc = pickle.load(file)
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
-
+CORS(app, resources={r"/api/*": {"origins": "*"}}) # Enable CORS for all routes
+@app.route("/api/test-cors", methods=["GET"])
+def test_cors():
+    return jsonify({"message": "CORS headers are set"})
 @app.route("/")
 def home():
     return "Hello, World!"
